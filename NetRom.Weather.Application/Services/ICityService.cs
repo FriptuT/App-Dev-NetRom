@@ -4,9 +4,9 @@ namespace NetRom.Weather.Application.Services;
 
 public interface ICityService
 {
-    Task<Guid> CreateAsync(CityModelForCreation cityModelForCreation);
-    Task<IEnumerable<CityModel>> GetAllAsync();
-    Task<CityModel?> GetByIdAsync(Guid cityId);
-    Task<CityModel> UpdateAsync(CityModel cityModel);
-    Task DeleteAsync(Guid cityId);
+    Task<Guid> CreateCityAsync(CityModelForCreation cityModelForCreation);
+    Task<IEnumerable<CityModel>> GetAllCitiesAsync();
+    Task<CityModel?> GetByIdCityAsync(Guid cityId);
+    Task<CityModel> UpdateCityAsync(CityModel cityModel);
+    Task DeleteCityAsync(Guid cityId);
 }

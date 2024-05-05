@@ -1,16 +1,21 @@
 ﻿using AutoMapper;
 using NetRom.Weather.Application.Models;
+using NetRom.Weather.Infrastructure.Repository;
 
 namespace NetRom.Weather.Application.Services;
 
 public class CityService : ICityService
 {
     private IList<CityModel> _cityModels;
+    private readonly ICityRepository _cityRepository;
+
     private IMapper _mapper {  get; set; }
 
-    public CityService( IMapper mapper)
+    public CityService( IMapper mapper, ICityRepository cityRepository)
     {
         _mapper = mapper;
+        _cityRepository = cityRepository;
+
         _cityModels = new List<CityModel>()
         {
             new()
@@ -40,44 +45,33 @@ public class CityService : ICityService
         };
     }
 
-    public Task<Guid> CreateAsync(CityModelForCreation cityModelForCreation)
+    public async Task<Guid> CreateCityAsync(CityModelForCreation cityModelForCreation)
     {
         var newCity = _mapper.Map<CityModel>(cityModelForCreation);
 
-        _cityModels.Add(newCity);
+        var newCityId =  await _cityRepository.CreateAsync(newCity);
 
-        return Task.FromResult(newCity.Id);
+        return newCityId;
     }
 
-    public async Task DeleteAsync(Guid cityId)
+    public async Task DeleteCityAsync(Guid cityId)
     {
-        _cityModels = await Task.FromResult(_cityModels.Where(c => c.Id == cityId).ToList());
+        await _cityRepository.DeleteAsync(cityId);
     }
 
-    public async Task<IEnumerable<CityModel>> GetAllAsync()
+    public async Task<IEnumerable<CityModel>> GetAllCitiesAsync()
     {
-        return await Task.FromResult(_cityModels);
+        return (IEnumerable<CityModel>)await _cityRepository.GetAllAsync();
     }
 
-    public async Task<CityModel?> GetByIdAsync(Guid cityId)
+    public async Task<CityModel?> GetByIdCityAsync(Guid cityId)
     {
-        var cityModel = await Task.FromResult(_cityModels.FirstOrDefault(c => c.Id == cityId));
+        var cityModel = await _cityRepository.GetByIdAsync(cityId);
         return cityModel;
     }
 
-    public async Task<CityModel> UpdateAsync(CityModel cityModel)
+    public async Task<CityModel> UpdateCityAsync(CityModel cityModel)
     {
-        var entity = _cityModels.FirstOrDefault(c => c.Id == cityModel.Id);
-
-        if (entity == null)
-        {
-            throw new Exception("orasul nu exista");
-        }
-
-        entity.Name = cityModel.Name;
-        entity.Latitude = cityModel.Latitude;
-        entity.Longitude = cityModel.Longitude;
-
-        return await Task.FromResult(cityModel);
+        var updatedCity = await _cityRepository.UpdateAsync(cityModel);
     }
 }
