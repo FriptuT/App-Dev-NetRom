@@ -11,5 +11,5 @@ public class CityModel
     
     public double Latitude { get; set; }
     
-    public double Temperature { get; set; }
+    public double? Temperature { get; set; }
 }
